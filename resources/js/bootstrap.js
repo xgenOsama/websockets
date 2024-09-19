@@ -1,3 +1,6 @@
+import 'bootstrap';
+import Echo from "laravel-echo"
+import Pusher from "pusher-js"
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
  * to our Laravel back-end. This library automatically handles sending the
@@ -5,11 +8,6 @@
  */
 
 import axios from 'axios';
-import Echo from "laravel-echo"
-import Pusher from "pusher-js"
-
-window.Pusher = Pusher;
-
 window.axios = axios;
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -29,15 +27,12 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     broadcaster: 'pusher',
 //     key: import.meta.env.VITE_PUSHER_APP_KEY,
 //     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? 'mt1',
-//     wsHost: import.meta.env.VITE_PUSHER_HOST ? import.meta.env.VITE_PUSHER_HOST : `ws-${import.meta.env.VITE_PUSHER_APP_CLUSTER}.pusher.com`,
+//     wsHost: import.meta.env.VITE_PUSHER_HOST ?? `ws-${import.meta.env.VITE_PUSHER_APP_CLUSTER}.pusher.com`,
 //     wsPort: import.meta.env.VITE_PUSHER_PORT ?? 80,
 //     wssPort: import.meta.env.VITE_PUSHER_PORT ?? 443,
 //     forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
 //     enabledTransports: ['ws', 'wss'],
 // });
-
-
-
 window.Echo = new Echo({
     broadcaster: 'pusher',
     authEndpoint: '/broadcasting/auth',
@@ -51,3 +46,13 @@ window.Echo = new Echo({
     disableStats: true,
     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
 });
+
+window.Echo.channel('messages')
+    .listen('MessageSent', (e) => {
+        console.log('Message:', e.message);
+});
+
+window.Echo.private(`user.1`)
+    .listen('UserNotification', (e) => {
+        console.log('Notification: ', e.message);
+    });
